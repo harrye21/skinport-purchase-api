@@ -113,17 +113,13 @@ With the default `.env` and seeded data, try the endpoints using the demo API ke
 CMD
 
 ```bash
-curl --compressed -H "Accept-Encoding: br" -H "Authorization: Bearer demo_token" http://localhost:3000/items
+
 ```
 
 CMD
 
 ```bash
-curl -X POST \
-  -H "Authorization: Bearer demo_token" \
-  -H "Content-Type: application/json" \
-  -d '{"productId":1}' \
-  http://localhost:3000/purchase
+curl -X POST -H "Authorization: Bearer demo_token" -H "Content-Type: application/json" -d "{\"productId\":1}" http://localhost:3000/purchase
 ```
 
 ## Endpoints

@@ -17,6 +17,15 @@ interface DbProduct {
   name: string;
 }
 
+interface PurchaseResponse {
+  userId: number;
+  balance: number;
+}
+
+interface ErrorResponse {
+  error: string;
+}
+
 // Guard helper to ensure IDs are positive integers before hitting the database.
 const isValidId = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value) && value > 0;
 
@@ -34,16 +43,50 @@ const parseNumeric = (value: unknown): number => {
 export const registerPurchaseRoutes = async (fastify: FastifyInstance): Promise<void> => {
   const db = getDbClient();
 
-  fastify.post<{ Body: PurchaseRequestBody }>(
+  fastify.post<{ Body: PurchaseRequestBody; Reply: PurchaseResponse | ErrorResponse }>(
     '/purchase',
     {
       schema: {
+        summary: 'Purchase a product',
+        description: 'Debits the user balance and records the product purchase in a single transaction.',
+        tags: ['purchase'],
         body: {
           type: 'object',
           required: ['userId', 'productId'],
           properties: {
             userId: { type: 'integer', minimum: 1 },
             productId: { type: 'integer', minimum: 1 }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            required: ['userId', 'balance'],
+            properties: {
+              userId: { type: 'integer', minimum: 1 },
+              balance: { type: 'number' }
+            }
+          },
+          400: {
+            type: 'object',
+            required: ['error'],
+            properties: {
+              error: { type: 'string' }
+            }
+          },
+          404: {
+            type: 'object',
+            required: ['error'],
+            properties: {
+              error: { type: 'string' }
+            }
+          },
+          500: {
+            type: 'object',
+            required: ['error'],
+            properties: {
+              error: { type: 'string' }
+            }
           }
         }
       }

@@ -41,6 +41,12 @@ Run the server in development mode:
 npm run dev
 ```
 
+View interactive API documentation:
+
+```bash
+open http://localhost:3000/docs
+```
+
 Build and start:
 
 ```bash

@@ -1,4 +1,6 @@
 import Fastify from 'fastify';
+import swagger from '@fastify/swagger';
+import swaggerUi from '@fastify/swagger-ui';
 import { closeDbClient } from './db.js';
 import { env } from './env.js';
 import { closeRedisClient } from './redisClient.js';
@@ -10,6 +12,21 @@ const buildServer = () => {
   const server = Fastify({ logger: true });
 
   server.get('/health', async () => ({ status: 'ok' }));
+  void server.register(swagger, {
+    openapi: {
+      info: {
+        title: 'Skinport Purchase API',
+        description: 'API for caching Skinport item prices and processing demo purchases',
+        version: '1.0.0'
+      }
+    }
+  });
+  void server.register(swaggerUi, {
+    routePrefix: '/docs',
+    uiConfig: {
+      docExpansion: 'list'
+    }
+  });
   server.register(registerItemRoutes);
   server.register(registerPurchaseRoutes);
 

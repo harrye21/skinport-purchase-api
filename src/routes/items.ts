@@ -15,6 +15,10 @@ export interface ItemPriceSummary {
   nonTradableMinPrice: number | null;
 }
 
+interface ErrorResponse {
+  error: string;
+}
+
 const ITEMS_CACHE_KEY = 'items:min-prices';
 const SKINPORT_FETCH_TIMEOUT_MS = 10_000;
 
@@ -118,48 +122,79 @@ export const registerItemRoutes = async (fastify: FastifyInstance): Promise<void
     fastify.log.warn({ err: error }, 'Redis unavailable; continuing without cache');
   }
 
-  fastify.get('/items', async (request, reply) => {
-    let cachedItems: ItemPriceSummary[] | null = null;
-
-    try {
-      const cached = await redis?.get(ITEMS_CACHE_KEY);
-
-      if (cached) {
-        try {
-          cachedItems = JSON.parse(cached) as ItemPriceSummary[];
-        } catch (error) {
-          fastify.log.warn({ err: error }, 'Failed to parse cached items; purging cache key');
-          if (redis) {
-            await redis.del(ITEMS_CACHE_KEY);
+  fastify.get<{ Reply: ItemPriceSummary[] | ErrorResponse }>(
+    '/items',
+    {
+      schema: {
+        summary: 'Get minimal Skinport item prices',
+        description: 'Returns tradable and non-tradable minimal prices from the Skinport API, cached in Redis.',
+        tags: ['items'],
+        response: {
+          200: {
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['marketHashName', 'tradableMinPrice', 'nonTradableMinPrice'],
+              properties: {
+                marketHashName: { type: 'string' },
+                tradableMinPrice: { type: ['number', 'null'] },
+                nonTradableMinPrice: { type: ['number', 'null'] }
+              }
+            }
+          },
+          502: {
+            type: 'object',
+            required: ['error'],
+            properties: {
+              error: { type: 'string' }
+            }
           }
         }
       }
-    } catch (error) {
-      fastify.log.warn({ err: error }, 'Failed to read from Redis cache');
-    }
+    },
+    async (request, reply) => {
+      let cachedItems: ItemPriceSummary[] | null = null;
 
-    if (cachedItems) {
-      return cachedItems;
-    }
+      try {
+        const cached = await redis?.get(ITEMS_CACHE_KEY);
 
-    try {
-      const items = await fetchItemPrices();
-
-      if (redis) {
-        try {
-          await redis.set(ITEMS_CACHE_KEY, JSON.stringify(items), {
-            EX: env.cacheTtlSeconds
-          });
-        } catch (error) {
-          fastify.log.warn({ err: error }, 'Failed to write items to Redis cache');
+        if (cached) {
+          try {
+            cachedItems = JSON.parse(cached) as ItemPriceSummary[];
+          } catch (error) {
+            fastify.log.warn({ err: error }, 'Failed to parse cached items; purging cache key');
+            if (redis) {
+              await redis.del(ITEMS_CACHE_KEY);
+            }
+          }
         }
+      } catch (error) {
+        fastify.log.warn({ err: error }, 'Failed to read from Redis cache');
       }
 
-      return items;
-    } catch (error) {
-      fastify.log.error(error);
-      reply.status(502);
-      return { error: 'Unable to fetch item prices' };
+      if (cachedItems) {
+        return cachedItems;
+      }
+
+      try {
+        const items = await fetchItemPrices();
+
+        if (redis) {
+          try {
+            await redis.set(ITEMS_CACHE_KEY, JSON.stringify(items), {
+              EX: env.cacheTtlSeconds
+            });
+          } catch (error) {
+            fastify.log.warn({ err: error }, 'Failed to write items to Redis cache');
+          }
+        }
+
+        return items;
+      } catch (error) {
+        fastify.log.error(error);
+        reply.status(502);
+        return { error: 'Unable to fetch item prices' };
+      }
     }
-  });
+  );
 };

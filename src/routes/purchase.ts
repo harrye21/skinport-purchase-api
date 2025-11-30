@@ -75,7 +75,13 @@ export const registerPurchaseRoutes = async (fastify: FastifyInstance): Promise<
           return newBalance;
         });
 
-        return { userId, balance: updatedUser.balance };
+        const updatedBalance = Number(updatedUser?.balance);
+
+        if (!Number.isFinite(updatedBalance)) {
+          throw new Error('INVALID_DATA');
+        }
+
+        return { userId, balance: updatedBalance };
       } catch (error) {
         if (error instanceof Error) {
           switch (error.message) {

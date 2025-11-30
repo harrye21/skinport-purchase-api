@@ -51,7 +51,7 @@ const positiveInteger = (value: string | undefined, name: string, fallback: stri
 const parseApiKeyMappings = (
   value: string | undefined,
   name: string,
-  fallback: string
+  fallback?: string
 ): Record<string, number> => {
   const raw = required(value, name, fallback);
   const mappings = raw
@@ -95,9 +95,5 @@ export const env = {
   redisUrl: required(process.env.REDIS_URL, 'REDIS_URL', 'redis://localhost:6379'),
   databaseUrl: required(process.env.DATABASE_URL, 'DATABASE_URL', 'postgres://postgres:postgres@localhost:5432/skinport'),
   cacheTtlSeconds: positiveInteger(process.env.ITEM_CACHE_TTL, 'ITEM_CACHE_TTL', '300'),
-  userApiKeys: parseApiKeyMappings(
-    process.env.USER_API_KEYS,
-    'USER_API_KEYS',
-    'demo_token:1,collector_token:2'
-  )
+  userApiKeys: parseApiKeyMappings(process.env.USER_API_KEYS, 'USER_API_KEYS')
 };

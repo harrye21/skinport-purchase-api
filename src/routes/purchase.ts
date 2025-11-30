@@ -71,6 +71,14 @@ export const registerPurchaseRoutes = async (fastify: FastifyInstance): Promise<
           const balance = parseNumeric(user.balance);
           const price = parseNumeric(product.price);
 
+          if (price <= 0) {
+            throw new Error('INVALID_PRICE');
+          }
+
+          if (balance < 0) {
+            throw new Error('INVALID_DATA');
+          }
+
           if (balance < price) {
             throw new Error('INSUFFICIENT_FUNDS');
           }
@@ -99,6 +107,9 @@ export const registerPurchaseRoutes = async (fastify: FastifyInstance): Promise<
             case 'INSUFFICIENT_FUNDS':
               reply.status(400);
               return { error: 'Insufficient balance' };
+            case 'INVALID_PRICE':
+              reply.status(400);
+              return { error: 'Product price must be positive' };
             case 'INVALID_DATA':
               reply.status(500);
               return { error: 'Unable to process data from database' };

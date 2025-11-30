@@ -37,14 +37,14 @@ export const registerPurchaseRoutes = async (fastify: FastifyInstance): Promise<
       }
     },
     async (request, reply) => {
-      const { userId, productId } = request.body;
-
-      if (!isValidId(userId) || !isValidId(productId)) {
-        reply.status(400);
-        return { error: 'userId and productId must be positive integers' };
-      }
-
       try {
+        const { userId, productId } = request.body ?? {};
+
+        if (!isValidId(userId) || !isValidId(productId)) {
+          reply.status(400);
+          return { error: 'userId and productId must be positive integers' };
+        }
+
         const updatedUser = await db.begin(async (tx) => {
           const [user] = await tx<DbUser[]>`select id, balance from users where id = ${userId} for update`;
           if (!user) {

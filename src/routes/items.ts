@@ -90,7 +90,14 @@ const fetchItemPrices = async (): Promise<ItemPriceSummary[]> => {
   url.searchParams.set('currency', 'EUR');
 
   try {
-    const response = await fetch(url, { signal: controller.signal });
+    const response = await fetch(url, {
+      method: 'GET',
+      signal: controller.signal,
+      headers: {
+        'Accept-Encoding': 'br',
+        Accept: 'application/json'
+      }
+    });
 
     if (!response.ok) {
       throw new Error(`Skinport API responded with ${response.status}`);

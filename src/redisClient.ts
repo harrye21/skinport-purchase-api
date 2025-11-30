@@ -24,6 +24,18 @@ export const getRedisClient = async (): Promise<RedisClientType> => {
     }
   } catch (error) {
     console.error('Failed to connect to Redis:', error);
+
+    // Clear the cached client and promise so a subsequent call can retry the
+    // connection instead of reusing a rejected promise forever.
+    try {
+      await client?.quit();
+    } catch (quitError) {
+      console.error('Failed to close Redis client after connection error:', quitError);
+    }
+
+    client = null;
+    connectPromise = null;
+
     throw error;
   }
 

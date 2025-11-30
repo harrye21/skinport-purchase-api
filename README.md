@@ -1,9 +1,9 @@
 # Skinport Purchase API
 
-Simple Fastify server in TypeScript that exposes two endpoints:
+Simple Fastify server in TypeScript exposing two endpoints:
 
-1. **GET `/items`** — Fetches Skinport items, returns the minimal tradable and non-tradable prices for each item, and caches the response in Redis.
-2. **POST `/purchase`** — Processes a purchase of a product from the local database, records the purchase, and returns the updated user balance.
+- **GET `/items`** — Fetches Skinport items, returns the minimal tradable and non-tradable prices for each item, and caches the response in Redis.
+- **POST `/purchase`** — Processes a purchase of a product from the local database, records the purchase, and returns the updated user balance.
 
 ## Requirements
 
@@ -13,15 +13,17 @@ Simple Fastify server in TypeScript that exposes two endpoints:
 
 ## Getting started
 
-Install dependencies:
+### 1) Install dependencies
 
 ```bash
 npm install
 ```
 
-Copy `.env.example` to `.env` (values are provided for local demos):
+### 2) Configure environment
 
-```
+Copy `.env.example` to `.env` and adjust if needed (defaults work for local demos):
+
+```bash
 cp .env.example .env
 
 PORT=3000
@@ -33,36 +35,39 @@ ITEM_CACHE_TTL=300
 USER_API_KEYS=demo_token:1,collector_token:2
 ```
 
-> **Auth note:** The Bearer token mapping in `USER_API_KEYS` is a simple demo mechanism to authenticate purchases; populate the
-> variable with any `token:userId` pairs you like for local testing.
+> **Auth note:** The Bearer token mapping in `USER_API_KEYS` is a simple demo mechanism to authenticate purchases; populate the variable with any `token:userId` pairs you like for local testing.
 >
-> **Security note:** `SKINPORT_API_URL` must be an `https://` URL pointing to `api.skinport.com`; other hosts are rejected to avoid
-> accidentally proxying requests to untrusted destinations.
+> **Security note:** `SKINPORT_API_URL` must be an `https://` URL pointing to `api.skinport.com`; other hosts are rejected to avoid accidentally proxying requests to untrusted destinations.
 
-You can also start local dependencies with Docker Compose (PostgreSQL + Redis):
+### 3) Start local services
+
+Spin up PostgreSQL and Redis with Docker Compose:
 
 ```bash
 docker compose up -d
 ```
-Use the default credentials from `.env.example`, then apply the schema and seed demo data (the inserts are idempotent thanks to unique constraints on usernames and product names):
+
+Apply the schema and seed demo data (inserts are idempotent thanks to unique constraints on usernames and product names):
 
 ```bash
 psql "${DATABASE_URL:-postgres://postgres:postgres@localhost:5432/skinport}" -f schema.sql
 ```
 
-Run the server in development mode:
+### 4) Run the app
+
+Development mode:
 
 ```bash
 npm run dev
 ```
 
-View interactive API documentation:
+Interactive API docs:
 
 ```bash
 open http://localhost:3000/docs
 ```
 
-Build and start:
+Production build:
 
 ```bash
 npm run build
@@ -71,7 +76,7 @@ npm start
 
 ## Quick demo with curl
 
-With the default `.env` and seeded data, you can try the endpoints using the demo API key (`demo_token` maps to user `1`):
+With the default `.env` and seeded data, try the endpoints using the demo API key (`demo_token` maps to user `1`):
 
 ```bash
 curl -H "Authorization: Bearer demo_token" http://localhost:3000/items

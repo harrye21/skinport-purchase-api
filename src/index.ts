@@ -30,6 +30,12 @@ const buildServer = () => {
   server.register(registerItemRoutes);
   server.register(registerPurchaseRoutes);
 
+  // Ensure shared connections are released when the server is shut down
+  // (useful for tests or external orchestrators calling `server.close()`).
+  server.addHook('onClose', async () => {
+    await Promise.allSettled([closeRedisClient(), closeDbClient()]);
+  });
+
   return server;
 };
 

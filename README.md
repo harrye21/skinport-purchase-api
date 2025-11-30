@@ -19,7 +19,7 @@ Install dependencies:
 npm install
 ```
 
-Create an `.env` file (optional, defaults are provided):
+Create an `.env` file (optional, defaults are provided, see `.env.example`):
 
 ```
 PORT=3000
@@ -29,10 +29,15 @@ SKINPORT_API_URL=https://api.skinport.com/v1/items
 ITEM_CACHE_TTL=300
 ```
 
-Apply the schema and seed demo data (the inserts are idempotent thanks to unique constraints on usernames and product names):
+You can also start local dependencies with Docker Compose (PostgreSQL + Redis):
 
 ```bash
-psql "$DATABASE_URL" -f schema.sql
+docker compose up -d
+```
+Use the default credentials from `.env.example`, then apply the schema and seed demo data (the inserts are idempotent thanks to unique constraints on usernames and product names):
+
+```bash
+psql "${DATABASE_URL:-postgres://postgres:postgres@localhost:5432/skinport}" -f schema.sql
 ```
 
 Run the server in development mode:

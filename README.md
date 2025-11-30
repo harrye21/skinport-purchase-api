@@ -13,7 +13,8 @@ Simple Fastify server in TypeScript exposing two endpoints:
 
 ## Quick start
 
-1. Install dependencies:from the project folder
+1. Install dependencies: ##from the project folder 
+CMD
 
    ```bash 
    npm install 
@@ -22,7 +23,6 @@ Simple Fastify server in TypeScript exposing two endpoints:
 2. Configure the environment by copying `.env.example` to `.env` (defaults work for local demos):
 
    ```bash
-   cp .env.example .env
 
    PORT=3000
    DATABASE_URL=postgres://postgres:postgres@localhost:5432/skinport
@@ -38,13 +38,13 @@ Simple Fastify server in TypeScript exposing two endpoints:
    > **Security note:** `SKINPORT_API_URL` must be an `https://` URL pointing to `api.skinport.com`; other hosts are rejected to avoid accidentally proxying requests to untrusted destinations.
 
 3. Start dependencies (PostgreSQL + Redis):
-
+CMD
    ```bash
    docker compose up -d
    ```
 
 4. Apply the schema and seed demo data (inserts are idempotent thanks to unique constraints on usernames and product names):
-
+CMD
    ```bash
    docker compose exec -T postgres psql -U postgres -d skinport < schema.sql
    ```
@@ -56,18 +56,18 @@ Simple Fastify server in TypeScript exposing two endpoints:
    ```
 
 5. Run the API (development mode):
-
+CMD
    ```bash
    npm run dev
    ```
 
    Interactive API docs:
 
-   ```bash
+   
    open http://localhost:3000/docs
-   ```
+   
 
-   Production build:
+   ##Production build: ##do not run both separately
 
    ```bash
    npm run build
@@ -79,7 +79,8 @@ With the default `.env` and seeded data, try the endpoints using the demo API ke
 
 ```bash
 curl -H "Authorization: Bearer demo_token" http://localhost:3000/items
-
+```
+```bash
 curl -X POST \
   -H "Authorization: Bearer demo_token" \
   -H "Content-Type: application/json" \

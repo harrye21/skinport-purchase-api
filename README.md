@@ -13,19 +13,19 @@ A compact Fastify service written in strict TypeScript with two core endpoints:
 - PostgreSQL
 - Redis
 
-## Quick start
+## Quick start (PowerShell)
 
-1. Install dependencies.
+1. Install dependencies:
 
-   CMD
-
-   ```bash
+   ```powershell
    npm install
    ```
 
-2. Configure the environment by copying `.env.example` to `.env` (defaults support local demos):
+2. Configure the environment (defaults support local demos):
 
-   ```bash
+   ```powershell
+   Copy-Item .env.example .env
+   @'
    PORT=3000
    DATABASE_URL=postgres://postgres:postgres@localhost:5432/skinport
    REDIS_URL=redis://localhost:6379
@@ -34,49 +34,36 @@ A compact Fastify service written in strict TypeScript with two core endpoints:
    USE_SKINPORT_FALLBACK=true
    ITEM_CACHE_TTL=300
    USER_API_KEYS=
+   '@ | Set-Content .env
    ```
 
 > **Security note:** `SKINPORT_API_URL` must target `https://api.skinport.com/v1/items`; other hosts are rejected to avoid proxying to untrusted destinations.
 
 > **Offline note:** When `USE_SKINPORT_FALLBACK` is `true` (default), the API will return bundled sample prices if the live Skinport request fails (useful in CI or networks where the API is blocked).
 
-3. Start dependencies (PostgreSQL + Redis).
+3. Start dependencies (PostgreSQL + Redis):
 
-   CMD
-
-   ```bash
+   ```powershell
    docker compose up -d
    ```
 
-4. Apply the schema and seed demo data (idempotent thanks to unique constraints on usernames and product names).
-
-   CMD
-
-   ```bash
-   docker compose exec -T postgres psql -U postgres -d skinport < schema.sql
-   ```
-
-   **Windows (PowerShell):**
+4. Apply the schema and seed demo data (idempotent thanks to unique constraints on usernames and product names):
 
    ```powershell
    Get-Content .\schema.sql | docker compose exec -T postgres psql -U postgres -d skinport
    ```
 
-5. Run the API in development mode.
+5. Run the API in development mode:
 
-   CMD
-
-   ```bash
+   ```powershell
    npm run dev
    ```
 
    Interactive API docs: http://localhost:3000/docs
 
-6. Build and run in production mode (do not run dev and prod servers simultaneously).
+6. Build and run in production mode (do not run dev and prod servers simultaneously):
 
-   CMD
-
-   ```bash
+   ```powershell
    npm run build
    npm start
    ```
@@ -124,3 +111,16 @@ Body:
 ```
 
 Performs a transactional purchase on behalf of the authenticated user, deducts the product price from the user balance, records the purchase, and responds with the updated balance.
+
+## POST requests in Postman
+
+Example setup for `POST /purchase`:
+
+1. Create a new request with method **POST** and URL `http://localhost:3000/purchase`.
+2. In the **Headers** tab, add `Authorization` with value `Bearer <token>` (token must match a configured entry in `USER_API_KEYS`).
+3. In the **Body** tab, choose **raw** → **JSON** and enter:
+
+   ```json
+   { "productId": 2 }
+   ```
+4. Send the request to receive the updated balance after the purchase is processed.

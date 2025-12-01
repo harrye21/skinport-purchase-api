@@ -13,19 +13,19 @@
 - PostgreSQL
 - Redis
 
-## Быстрый запуск
+## Быстрый запуск (PowerShell)
 
-1. Установите зависимости.
+1. Установите зависимости:
 
-   CMD
-
-   ```bash
+   ```powershell
    npm install
    ```
 
-2. Скопируйте `.env.example` в `.env` (значения подходят для локального демо) и при необходимости измените:
+2. Подготовьте переменные окружения (значения подходят для локального демо):
 
-   ```bash
+   ```powershell
+   Copy-Item .env.example .env
+   @'
    PORT=3000
    DATABASE_URL=postgres://postgres:postgres@localhost:5432/skinport
    REDIS_URL=redis://localhost:6379
@@ -34,49 +34,36 @@
    USE_SKINPORT_FALLBACK=true
    ITEM_CACHE_TTL=300
    USER_API_KEYS=
+   '@ | Set-Content .env
    ```
 
 > **Безопасность:** `SKINPORT_API_URL` должен указывать на `https://api.skinport.com/v1/items`; другие хосты отклоняются, чтобы не проксировать запросы на непроверённые адреса.
 
 > **Оффлайн:** если `USE_SKINPORT_FALLBACK` стоит в `true` (по умолчанию), при ошибке запроса к Skinport API вернутся встроенные демонстрационные цены — удобно для CI и сетей с блокировками.
 
-3. Запустите PostgreSQL и Redis.
+3. Запустите PostgreSQL и Redis:
 
-   CMD
-
-   ```bash
+   ```powershell
    docker compose up -d
    ```
 
-4. Накатите схему и демо-данные (идемпотентно благодаря уникальным ограничениям на пользователей и товары).
-
-   CMD
-
-   ```bash
-   docker compose exec -T postgres psql -U postgres -d skinport < schema.sql
-   ```
-
-   **Windows (PowerShell):**
+4. Накатите схему и демо-данные (идемпотентно благодаря уникальным ограничениям на пользователей и товары):
 
    ```powershell
    Get-Content .\schema.sql | docker compose exec -T postgres psql -U postgres -d skinport
    ```
 
-5. Запустите API в режиме разработки.
+5. Запустите API в режиме разработки:
 
-   CMD
-
-   ```bash
+   ```powershell
    npm run dev
    ```
 
    Документация: http://localhost:3000/docs
 
-6. Соберите и запустите продакшен (не запускайте одновременно с dev).
+6. Соберите и запустите продакшен (не запускайте одновременно с dev):
 
-   CMD
-
-   ```bash
+   ```powershell
    npm run build
    npm start
    ```
@@ -124,3 +111,16 @@ const data = await response.json();
 ```
 
 Эндпоинт проводит транзакцию покупки, списывает стоимость с баланса пользователя, сохраняет запись и возвращает обновлённый баланс.
+
+## POST-запросы в Postman
+
+Настройка примера для `POST /purchase`:
+
+1. Создайте запрос с методом **POST** и URL `http://localhost:3000/purchase`.
+2. На вкладке **Headers** добавьте `Authorization` со значением `Bearer <token>` (токен должен совпадать с записью из `USER_API_KEYS`).
+3. На вкладке **Body** выберите **raw** → **JSON** и вставьте:
+
+   ```json
+   { "productId": 2 }
+   ```
+4. Отправьте запрос, чтобы получить обновлённый баланс после обработки покупки.

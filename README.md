@@ -20,7 +20,7 @@ Even with a full set of browser headers, server-side requests receive a 403 resp
 Therefore, a reliable fallback to current sample data has been implemented—the service always returns a 200 response and valid JSON.
 
 If necessary, you can connect FlareSolverr / a headless browser in production or switch to their future paid API.
-## Quick start (PowerShell)
+## Quick start PowerShell 7.5.4
 
 1. Install dependencies:
 

@@ -30,6 +30,7 @@
    DATABASE_URL=postgres://postgres:postgres@localhost:5432/skinport
    REDIS_URL=redis://localhost:6379
    SKINPORT_API_URL=https://api.skinport.com/v1/items
+   SKINPORT_USER_AGENT=skinport-purchase-api/1.0 (+https://github.com/user/skinport-purchase-api)
    ITEM_CACHE_TTL=300
    # Демонстрационные токены, сопоставление токен → userId
    USER_API_KEYS=demo_token:1,collector_token:2
@@ -128,6 +129,16 @@ curl -X POST \
   -d '{"productId":1}' \
   http://localhost:3000/purchase
 ```
+
+> **Совет для Windows cURL:** Используйте двойные кавычки вокруг JSON-тела вместо одинарных:
+>
+> ```powershell
+> curl -X POST \
+>   -H "Authorization: Bearer demo_token" \
+>   -H "Content-Type: application/json" \
+>   -d "{\"productId\":1}" \
+>   http://localhost:3000/purchase
+> ```
 
 ## Эндпоинты
 

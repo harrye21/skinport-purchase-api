@@ -95,7 +95,8 @@ const fetchItemPrices = async (logger: FastifyBaseLogger): Promise<ItemPriceSumm
       signal: controller.signal,
       headers: {
         'Accept-Encoding': 'br',
-        Accept: 'application/json'
+        Accept: 'application/json',
+        'User-Agent': env.skinportUserAgent
       }
     });
 

@@ -92,6 +92,11 @@ export const env = {
     'https://api.skinport.com/v1/items',
     'api.skinport.com'
   ),
+  skinportUserAgent: required(
+    process.env.SKINPORT_USER_AGENT,
+    'SKINPORT_USER_AGENT',
+    'skinport-purchase-api/1.0 (+https://github.com/user/skinport-purchase-api)'
+  ),
   redisUrl: required(process.env.REDIS_URL, 'REDIS_URL', 'redis://localhost:6379'),
   databaseUrl: required(process.env.DATABASE_URL, 'DATABASE_URL', 'postgres://postgres:postgres@localhost:5432/skinport'),
   cacheTtlSeconds: positiveInteger(process.env.ITEM_CACHE_TTL, 'ITEM_CACHE_TTL', '300'),

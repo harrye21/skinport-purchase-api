@@ -12,7 +12,14 @@ A compact Fastify service written in strict TypeScript with two core endpoints:
 - Node.js 20+
 - PostgreSQL
 - Redis
+### Important about the Skinport API
+The public endpoint `/v1/items` is protected by Cloudflare Bot Management + JS challenge in 2025.
 
+Even with a full set of browser headers, server-side requests receive a 403 response + the "Just a moment…" HTML page.
+
+Therefore, a reliable fallback to current sample data has been implemented—the service always returns a 200 response and valid JSON.
+
+If necessary, you can connect FlareSolverr / a headless browser in production or switch to their future paid API.
 ## Quick start (PowerShell)
 
 1. Install dependencies:

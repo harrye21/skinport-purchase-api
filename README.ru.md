@@ -33,7 +33,7 @@
    SKINPORT_USER_AGENT=skinport-purchase-api/1.0 (+https://github.com/user/skinport-purchase-api)
    USE_SKINPORT_FALLBACK=true
    ITEM_CACHE_TTL=300
-   USER_API_KEYS=
+   USER_API_KEYS=test-token:1
    '@ | Set-Content .env
    ```
 
@@ -64,9 +64,17 @@
 6. Соберите и запустите продакшен (не запускайте одновременно с dev):
 
    ```powershell
-   npm run build
-   npm start
-   ```
+    npm run build
+    npm start
+    ```
+
+## Тестирование
+
+Запуск юнит-тестов (Redis, Skinport и база подменяются моками, отдельные сервисы не нужны):
+
+```bash
+npm test
+```
 
 ## Как обращаться к Skinport API
 

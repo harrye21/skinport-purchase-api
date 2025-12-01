@@ -33,7 +33,7 @@ A compact Fastify service written in strict TypeScript with two core endpoints:
    SKINPORT_USER_AGENT=skinport-purchase-api/1.0 (+https://github.com/user/skinport-purchase-api)
    USE_SKINPORT_FALLBACK=true
    ITEM_CACHE_TTL=300
-   USER_API_KEYS=
+   USER_API_KEYS=test-token:1
    '@ | Set-Content .env
    ```
 
@@ -67,6 +67,14 @@ A compact Fastify service written in strict TypeScript with two core endpoints:
    npm run build
    npm start
    ```
+
+## Testing
+
+Run the unit test suite (uses mocked Redis/Skinport/DB dependencies so no services need to be running):
+
+```bash
+npm test
+```
 
 ## Skinport API usage
 

@@ -162,3 +162,13 @@ Example setup for `POST /purchase`:
    { "productId": 2 }
    ```
 4. Send the request to receive the updated balance after the purchase is processed.
+
+**Copy-paste ready example (uses the demo token):**
+
+```
+POST http://localhost:3000/purchase
+Authorization: Bearer demo_token
+Content-Type: application/json
+
+{ "productId": 2 }
+```

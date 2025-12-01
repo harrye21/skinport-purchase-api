@@ -162,3 +162,13 @@ curl.exe --compressed `
    { "productId": 2 }
    ```
 4. Отправьте запрос, чтобы получить обновлённый баланс после обработки покупки.
+
+**Готовый пример для копирования (демо-токен):**
+
+```
+POST http://localhost:3000/purchase
+Authorization: Bearer demo_token
+Content-Type: application/json
+
+{ "productId": 2 }
+```

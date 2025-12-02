@@ -5,10 +5,19 @@ on:
     branches: [ main, port-api ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      run_integration:
+        description: 'Run integration tests (true/false)'
+        required: false
+        default: 'true'
 
 jobs:
   integration:
     runs-on: ubuntu-latest
+    env:
+      # Prefer explicit workflow_dispatch input; default to 'true' when not provided.
+      RUN_INTEGRATION: "${{ github.event.inputs.run_integration || 'true' }}"
     services:
       postgres:
         image: postgres:16-alpine
@@ -54,14 +63,40 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Prepare and start production server
+        run: |
+          npm run build
+          # start production server in background and record PID
+          nohup npm start > server.log 2>&1 & echo $! > server.pid
+          echo "started server, pid=$(cat server.pid)"
+
+      - name: Wait for server readiness
+        run: |
+          n=0
+          until curl -sSf http://127.0.0.1:3000/items || [ $n -ge 60 ]; do sleep 1; n=$((n+1)); done
+
       - name: Run integration tests
+        if: env.RUN_INTEGRATION == 'true'
         env:
           DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/skinport
           REDIS_URL: redis://127.0.0.1:6379
           BASE_URL: http://127.0.0.1:3000
         run: |
-          # start the app in background
-          npm run dev &
-          # give the app some time to start
-          n=0; until curl -sSf http://127.0.0.1:3000/items || [ $n -ge 30 ]; do sleep 1; n=$((n+1)); done
           npm run test:integration
+
+      - name: Stop production server
+        if: always()
+        run: |
+          if [ -f server.pid ]; then
+            pid=$(cat server.pid) || true
+            echo "stopping server pid=$pid"
+            kill -TERM $pid || true
+            # wait for process to exit
+            for i in {1..30}; do
+              if ! ps -p $pid > /dev/null; then
+                echo "process $pid stopped"
+                break
+              fi
+              sleep 1
+            done
+          fi

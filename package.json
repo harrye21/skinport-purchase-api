@@ -7,7 +7,7 @@
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "test": "vitest run",
-    "test:integration": "vitest run tests/integration.test.ts --threads=false"
+    "test:integration": "vitest run tests/integration.test.ts"
   },
   "dependencies": {
     "@fastify/swagger": "^9.6.1",

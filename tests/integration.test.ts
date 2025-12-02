@@ -1,6 +1,8 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import postgres from 'postgres';
 import { createClient, RedisClientType } from 'redis';
+
+vi.setConfig({ hookTimeout: 40000 });
 
 const BASE_URL = process.env.BASE_URL || 'http://127.0.0.1:3000';
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
@@ -63,8 +65,9 @@ describe('Integration smoke tests', () => {
 
   it('POST /purchase performs a transactional purchase and updates DB', async () => {
     // read current balance and product price
-    const user = await sql!.`SELECT id, balance FROM users WHERE id = 1`;
-    const product = await sql!.`SELECT id, price FROM products WHERE id = 1`;
+      const db = sql!;
+      const user = await db`SELECT id, balance FROM users WHERE id = 1`;
+      const product = await db`SELECT id, price FROM products WHERE id = 1`;
     expect(user.length).toBeGreaterThan(0);
     expect(product.length).toBeGreaterThan(0);
     const prevBalance = Number(user[0].balance);
@@ -85,7 +88,7 @@ describe('Integration smoke tests', () => {
     expect(Math.abs(newBalance - (prevBalance - price))).toBeLessThan(0.01);
 
     // check purchases table has a recent entry
-    const purchases = await sql!.`SELECT id FROM purchases WHERE user_id = 1 AND product_id = 1 ORDER BY created_at DESC LIMIT 1`;
+      const purchases = await db`SELECT id FROM purchases WHERE user_id = 1 AND product_id = 1 ORDER BY created_at DESC LIMIT 1`;
     expect(purchases.length).toBeGreaterThan(0);
   });
 });

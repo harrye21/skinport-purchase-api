@@ -75,6 +75,29 @@ If necessary, you can connect FlareSolverr / a headless browser in production or
    npm start
    ```
 
+  ## Development setup scripts
+
+  There are two helper scripts to automate starting dependencies and applying the DB schema.
+
+  - PowerShell (already added): `scripts/setup-dev.ps1`
+
+    Usage (PowerShell):
+
+    ```powershell
+    # runs npm install, starts Docker services, applies schema and starts dev server
+    .\scripts\setup-dev.ps1
+    ```
+
+  - Cross-platform Node script: `scripts/setup-dev.js`
+
+    Usage (any shell with Node):
+
+    ```bash
+    node ./scripts/setup-dev.js
+    ```
+
+    The Node script performs the same steps but works on Windows, macOS and Linux — it uses the local `docker` and `npm` commands and starts the dev server as a detached process.
+
 ## Testing
 
 Run the unit test suite (uses mocked Redis/Skinport/DB dependencies so no services need to be running):

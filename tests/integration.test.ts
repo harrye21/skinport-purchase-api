@@ -1,15 +1,18 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { buildServer } from '../src/index.js';
 import postgres from 'postgres';
 import { createClient, RedisClientType } from 'redis';
 
-vi.setConfig({ hookTimeout: 40000 });
+vi.setConfig({ hookTimeout: 60000 });
 
 const BASE_URL = process.env.BASE_URL || 'http://127.0.0.1:3000';
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-const DATABASE_URL = process.env.DATABASE_URL || 'postgres://postgres:postgres@127.0.0.1:5432/skinport';
+const DATABASE_URL =
+  process.env.DATABASE_URL || 'postgres://postgres:postgres@127.0.0.1:5432/skinport';
 
 let sql: ReturnType<typeof postgres> | null = null;
 let redis: RedisClientType | null = null;
+let server: ReturnType<typeof buildServer> | null = null;
 
 const waitFor = async (fn: () => Promise<boolean>, timeoutMs = 30000, interval = 500) => {
   const start = Date.now();
@@ -25,15 +28,22 @@ const waitFor = async (fn: () => Promise<boolean>, timeoutMs = 30000, interval =
 };
 
 beforeAll(async () => {
+  // Start Fastify server for integration tests
+  server = buildServer();
+  await server.listen({ port: 3000, host: '127.0.0.1' });
+
   // wait for HTTP server
   await waitFor(async () => {
     try {
-      const res = await fetch(`${BASE_URL}/items`, { method: 'GET', headers: { Authorization: 'Bearer demo_token' } });
+      const res = await fetch(`${BASE_URL}/items`, {
+        method: 'GET',
+        headers: { Authorization: 'Bearer demo_token' },
+      });
       return res.ok;
     } catch (e) {
       return false;
     }
-  }, 30000);
+  }, 60000);
 
   // connect to DB and redis
   sql = postgres(DATABASE_URL, { max: 2 });
@@ -44,15 +54,27 @@ beforeAll(async () => {
 afterAll(async () => {
   try {
     await redis?.quit();
-  } catch {}
+  } catch {
+    /* ignore - best-effort cleanup */
+  }
   try {
     await sql?.end({ timeout: 1_000 });
-  } catch {}
+  } catch {
+    /* ignore - best-effort cleanup */
+  }
+  try {
+    await server?.close();
+  } catch {
+    /* ignore - best-effort cleanup */
+  }
 });
 
 describe('Integration smoke tests', () => {
   it('GET /items returns an array and caches to Redis', async () => {
-    const res = await fetch(`${BASE_URL}/items`, { method: 'GET', headers: { Authorization: 'Bearer demo_token' } });
+    const res = await fetch(`${BASE_URL}/items`, {
+      method: 'GET',
+      headers: { Authorization: 'Bearer demo_token' },
+    });
     expect(res.ok).toBe(true);
     const body = await res.json();
     expect(Array.isArray(body)).toBe(true);
@@ -65,9 +87,9 @@ describe('Integration smoke tests', () => {
 
   it('POST /purchase performs a transactional purchase and updates DB', async () => {
     // read current balance and product price
-      const db = sql!;
-      const user = await db`SELECT id, balance FROM users WHERE id = 1`;
-      const product = await db`SELECT id, price FROM products WHERE id = 1`;
+    const db = sql!;
+    const user = await db`SELECT id, balance FROM users WHERE id = 1`;
+    const product = await db`SELECT id, price FROM products WHERE id = 1`;
     expect(user.length).toBeGreaterThan(0);
     expect(product.length).toBeGreaterThan(0);
     const prevBalance = Number(user[0].balance);
@@ -76,7 +98,7 @@ describe('Integration smoke tests', () => {
     const res = await fetch(`${BASE_URL}/purchase`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer demo_token' },
-      body: JSON.stringify({ productId: 1 })
+      body: JSON.stringify({ productId: 1 }),
     });
 
     expect(res.ok).toBe(true);
@@ -88,7 +110,8 @@ describe('Integration smoke tests', () => {
     expect(Math.abs(newBalance - (prevBalance - price))).toBeLessThan(0.01);
 
     // check purchases table has a recent entry
-      const purchases = await db`SELECT id FROM purchases WHERE user_id = 1 AND product_id = 1 ORDER BY created_at DESC LIMIT 1`;
+    const purchases =
+      await db`SELECT id FROM purchases WHERE user_id = 1 AND product_id = 1 ORDER BY created_at DESC LIMIT 1`;
     expect(purchases.length).toBeGreaterThan(0);
   });
 });

